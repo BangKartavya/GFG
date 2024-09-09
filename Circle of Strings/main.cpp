@@ -1,35 +1,57 @@
-/**
- * Definition for singly-linked list.
- * struct ListNode {
- *     int val;
- *     ListNode *next;
- *     ListNode() : val(0), next(nullptr) {}
- *     ListNode(int x) : val(x), next(nullptr) {}
- *     ListNode(int x, ListNode *next) : val(x), next(next) {}
- * };
- */
+//{ Driver Code Starts
+// Initial Template for C++
+
+#include <bits/stdc++.h>
+using namespace std;
+
+
+// } Driver Code Ends
+// User function Template for C++
+
 class Solution {
-public:
-    int gcd(int a,int b) {
-        if(b ==0) return a;
-
-        return gcd(b,a%b);
-    }
-    ListNode* insertGreatestCommonDivisors(ListNode* head) {
-        if(!head || !head->next) return head;
-
-        ListNode* temp1 = head;
-        ListNode* temp2 = head->next;
-
-        while(temp2) {
-            int g = gcd(temp1->val,temp2->val);
-            temp1->next = new ListNode(g);
-            temp1->next->next = temp2;
-
-            temp1 = temp1->next->next;
-            temp2 = temp2->next;
+  public:
+    int isCircle(vector<string> &arr) {
+        int n = arr.size();
+        int start = 0;
+        vector<vector<bool>> graph(26,vector<bool>(26));
+        vector<int> degree(26);
+        
+        for(auto i: arr) {
+            int u = i.front() -'a';
+            int v = i.back() - 'a';
+            degree[u]++;
+            degree[v]--;
+            graph[u][v] = true;
+            start = u;
         }
-
-        return head;
+        if(any_of(degree.begin(),degree.end(),[&](int x) {return x;})) return false;
+        
+        auto dfs = [&](auto self,int u) -> void {
+            for(int v = 0;v<26;v++) if(graph[u][v]) graph[u][v] = false,self(self,v); 
+        };
+        dfs(dfs,start);
+        return !any_of(graph.begin(),graph.end(),[&](const auto& v) {return count(v.begin(),v.end(),1);});
     }
 };
+
+//{ Driver Code Starts.
+int main() {
+    int t;
+    cin >> t;
+    while (t--) {
+        int N;
+        cin >> N;
+        vector<string> A;
+        string s;
+
+        for (int i = 0; i < N; i++) {
+            cin >> s;
+            A.push_back(s);
+        }
+
+        Solution ob;
+        cout << ob.isCircle(A) << endl;
+    }
+    return 0;
+}
+// } Driver Code Ends
